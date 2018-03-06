@@ -105,10 +105,10 @@ public class VideoChatActivity extends ListActivity {
 
         PeerConnectionFactory pcFactory = new PeerConnectionFactory();
         this.pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, this.username);
-        List<PeerConnection.IceServer> servers = getXirSysIceServers();
-        if (!servers.isEmpty()){
-            this.pnRTCClient.setSignalParams(new PnSignalingParams());
-        }
+        //List<PeerConnection.IceServer> servers = getXirSysIceServers();
+        //if (!servers.isEmpty()){
+        //    this.pnRTCClient.setSignalParams(new PnSignalingParams());
+        //}
 
         // Returns the number of cams & front/back face device name
         int camNumber = VideoCapturerAndroid.getDeviceCount();
@@ -239,17 +239,17 @@ public class VideoChatActivity extends ListActivity {
         super.onBackPressed();
     }
 
-    public List<PeerConnection.IceServer> getXirSysIceServers(){
-        List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
-        try {
-            servers = new XirSysRequest().execute().get();
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        }catch (ExecutionException e){
-            e.printStackTrace();
-        }
-        return servers;
-    }
+    //public List<PeerConnection.IceServer> getXirSysIceServers(){
+    //    List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
+    //    try {
+    //        servers = new XirSysRequest().execute().get();
+    //    } catch (InterruptedException e){
+    //        e.printStackTrace();
+    //    }catch (ExecutionException e){
+    //        e.printStackTrace();
+    //    }
+    //    return servers;
+    //}
 
     public void connectToUser(String user) {
         this.pnRTCClient.connect(user);

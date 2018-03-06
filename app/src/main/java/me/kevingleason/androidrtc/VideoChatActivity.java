@@ -116,7 +116,12 @@ public class VideoChatActivity extends ListActivity {
         String backFacingCam = VideoCapturerAndroid.getNameOfBackFacingDevice();
 
         // Creates a VideoCapturerAndroid instance for the device name
-        VideoCapturer capturer = VideoCapturerAndroid.create(frontFacingCam);
+        VideoCapturer capturer;
+        if (frontFacingCam != null) {
+            capturer = VideoCapturerAndroid.create(frontFacingCam);
+        } else {
+            capturer = VideoCapturerAndroid.create(backFacingCam);
+        }
 
         // First create a Video Source, then we can make a Video Track
         localVideoSource = pcFactory.createVideoSource(capturer, this.pnRTCClient.videoConstraints());

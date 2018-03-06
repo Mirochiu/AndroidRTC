@@ -198,7 +198,6 @@ public class MainActivity extends ListActivity {
                             Log.d("MA-dC", "SUCCESS: " + message.toString());
                             Intent intent = new Intent(MainActivity.this, VideoChatActivity.class);
                             intent.putExtra(Constants.USER_NAME, username);
-                            intent.putExtra(Constants.CALL_USER, callNum);  // Only accept from this number?
                             startActivity(intent);
                         }
                     });

@@ -3,7 +3,6 @@ package me.kevingleason.androidrtc.servers;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -27,14 +26,15 @@ import java.util.List;
 
 /**
  * Created by GleasonK on 11/12/15.
+ * Modified by MiroChiu on 03/08/18
  */
 public class XirSysRequest extends AsyncTask<Void,Void,List<PeerConnection.IceServer>> {
 
     public List<PeerConnection.IceServer> doInBackground(Void... params){
-        List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
+        List<PeerConnection.IceServer> servers = new ArrayList<>();
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost request = new HttpPost("https://service.xirsys.com/ice");
-        List<NameValuePair> data = new ArrayList<NameValuePair>();
+        List<NameValuePair> data = new ArrayList<>();
         data.add(new BasicNameValuePair("room", "default"));
         data.add(new BasicNameValuePair("application", "default"));
         data.add(new BasicNameValuePair("domain", "kevingleason.me"));
@@ -50,7 +50,7 @@ public class XirSysRequest extends AsyncTask<Void,Void,List<PeerConnection.IceSe
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             StringBuilder builder = new StringBuilder();
-            for (String line=null; (line = reader.readLine()) != null;) {
+            for (String line; (line = reader.readLine()) != null;) {
                 builder.append(line).append("\n");
             }
             JSONTokener tokener = new JSONTokener(builder.toString());

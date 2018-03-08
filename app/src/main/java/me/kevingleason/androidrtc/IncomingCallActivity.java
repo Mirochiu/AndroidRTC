@@ -34,10 +34,17 @@ public class IncomingCallActivity extends Activity {
     private Pubnub mPubNub;
     private TextView mCallerID;
 
+    private boolean backPressed = false;
+    private Thread  backPressedThread = null;
+    private String strPressBackTwice;
+    private String strCallerHangup;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_incoming_call);
+        this.strCallerHangup = getString(R.string.caller_hangup);
+        this.strPressBackTwice = getString(R.string.press_back_twice_for_exit);
 
         this.mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFS, MODE_PRIVATE);
         if (!this.mSharedPreferences.contains(Constants.USER_NAME)){
@@ -52,8 +59,7 @@ public class IncomingCallActivity extends Activity {
         if (extras==null || !extras.containsKey(Constants.CALL_USER)){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            Toast.makeText(this, "Need to pass username to IncomingCallActivity in intent extras (Constants.CALL_USER).",
-                    Toast.LENGTH_SHORT).show();
+            showToast("Need to pass username to IncomingCallActivity in intent extras (Constants.CALL_USER).");
             finish();
             return;
         }
@@ -84,9 +90,10 @@ public class IncomingCallActivity extends Activity {
                         JSONObject pktMsg = jsonMsg.getJSONObject(PnRTCMessage.JSON_PACKET);
                         if (pktMsg.has(PnRTCMessage.JSON_HANGUP) &&
                                 pktMsg.getBoolean(PnRTCMessage.JSON_HANGUP)) {
-                            showToast("Caller hangup!");
+                            showToast(strCallerHangup);
                             Intent intent = new Intent(IncomingCallActivity.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                     } catch (JSONException e){
                         e.printStackTrace();
@@ -144,11 +151,12 @@ public class IncomingCallActivity extends Activity {
         intent.putExtra(Constants.USER_NAME, this.username);
         intent.putExtra(Constants.CALL_USER, this.callUser);
         startActivity(intent);
+        finish();
     }
 
     /**
      * Publish a hangup command if rejecting call.
-     * @param view
+     * @param view the view triggered the function
      */
     public void rejectCall(View view){
         JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(this.username);
@@ -157,6 +165,7 @@ public class IncomingCallActivity extends Activity {
             public void successCallback(String channel, Object message) {
                 Intent intent = new Intent(IncomingCallActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -167,5 +176,27 @@ public class IncomingCallActivity extends Activity {
         if(this.mPubNub!=null){
             this.mPubNub.unsubscribeAll();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!this.backPressed){
+            this.backPressed = true;
+            showToast(this.strPressBackTwice);
+            this.backPressedThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(5000);
+                        backPressed = false;
+                    } catch (InterruptedException e){ Log.d("ICA-oBP","Successfully interrupted"); }
+                }
+            });
+            this.backPressedThread.start();
+            return;
+        }
+        if (this.backPressedThread != null)
+            this.backPressedThread.interrupt();
+        super.onBackPressed();
     }
 }

@@ -18,11 +18,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import me.kevingleason.androidrtc.MainActivity;
@@ -33,6 +33,7 @@ import me.kevingleason.androidrtc.util.Constants;
 
 /**
  * Created by GleasonK on 7/31/15.
+ * Modified by MiroChiu on 03/08/18.
  */
 public class HistoryAdapter extends ArrayAdapter<HistoryItem> {
     private final Context context;
@@ -48,7 +49,7 @@ public class HistoryAdapter extends ArrayAdapter<HistoryItem> {
         this.inflater = LayoutInflater.from(context);
         this.mPubNub  = pubnub;
         this.values   = values;
-        this.users    = new HashMap<String, ChatUser>();
+        this.users    = new HashMap<>();
         updateHistory();
     }
 
@@ -123,8 +124,8 @@ public class HistoryAdapter extends ArrayAdapter<HistoryItem> {
         });
     }
 
-    public void updateHistory(){
-        final List<HistoryItem> rtcHistory = new LinkedList<HistoryItem>();
+    private void updateHistory(){
+        final List<HistoryItem> rtcHistory = new LinkedList<>();
         String usrStdBy = this.mPubNub.getUUID() + Constants.STDBY_SUFFIX;
         this.mPubNub.history(usrStdBy, 25, new Callback() {
             @Override
@@ -165,12 +166,12 @@ public class HistoryAdapter extends ArrayAdapter<HistoryItem> {
     /**
      * Format the long System.currentTimeMillis() to a better looking timestamp. Uses a calendar
      *   object to format with the user's current time zone.
-     * @param timeStamp
-     * @return
+     * @param timeStamp time in milliseconds
+     * @return the normalized time stamp string
      */
-    public static String formatTimeStamp(long timeStamp){
+    private static String formatTimeStamp(long timeStamp){
         // Create a DateFormatter object for displaying date in specified format.
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM d, h:mm a");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM d, h:mm a", Locale.US);
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();

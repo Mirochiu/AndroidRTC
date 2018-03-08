@@ -17,8 +17,13 @@
     <string name="here_now">Here Now:</string>
     <string name="no_call_history">No call History\n\nRecent calls appear here.</string>
 
+    <string name="press_back_twice_for_exit">Press back again to end.</string>
+    <string name="caller_hangup">Caller hangup</string>
+    <string name="call_ended">Call end&#8230;</string>
+
     <!-- Incoming Call Activity -->
     <string name="incoming_call">Incoming Call&#8230;</string>
-    <string name="incoming_call_from">Kevin Gleason</string>
+    <string name="incoming_call_from">Incomming call from &#8230;</string>
+
 
 </resources>

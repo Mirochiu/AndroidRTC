@@ -1,12 +1,10 @@
 package me.kevingleason.androidrtc;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,9 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
-import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
-import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoCapturerAndroid;
@@ -33,19 +29,15 @@ import org.webrtc.VideoRendererGui;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import me.kevingleason.androidrtc.adapters.ChatAdapter;
 import me.kevingleason.androidrtc.adt.ChatMessage;
-import me.kevingleason.androidrtc.servers.XirSysRequest;
 import me.kevingleason.androidrtc.util.Constants;
 import me.kevingleason.androidrtc.util.LogRTCListener;
 import me.kevingleason.pnwebrtc.PnPeer;
 import me.kevingleason.pnwebrtc.PnRTCClient;
-import me.kevingleason.pnwebrtc.PnSignalingParams;
 
 /**
  * This chat will begin/subscribe to a video chat.
@@ -55,6 +47,7 @@ public class VideoChatActivity extends ListActivity {
     public static final String VIDEO_TRACK_ID = "videoPN";
     public static final String AUDIO_TRACK_ID = "audioPN";
     public static final String LOCAL_MEDIA_STREAM_ID = "localStreamPN";
+    public static final int MESSAGE_LENGTH_LIMIT = 256;
 
     private PnRTCClient pnRTCClient;
     private VideoSource localVideoSource;
@@ -68,7 +61,9 @@ public class VideoChatActivity extends ListActivity {
 
     private String username;
     private boolean backPressed = false;
-    private Thread  backPressedThread = null;
+    private Thread backPressedThread = null;
+    private String strPressBackTwice;
+    private String strCallEnded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +84,11 @@ public class VideoChatActivity extends ListActivity {
         this.mChatList     = getListView();
         this.mChatEditText = (EditText) findViewById(R.id.chat_input);
         this.mCallStatus   = (TextView) findViewById(R.id.call_status);
+        this.strPressBackTwice = getString(R.string.press_back_twice_for_exit);
+        this.strCallEnded = getString(R.string.call_ended);
 
         // Set up the List View for chatting
-        List<ChatMessage> ll = new LinkedList<ChatMessage>();
+        List<ChatMessage> ll = new LinkedList<>();
         mChatAdapter = new ChatAdapter(this, ll);
         mChatList.setAdapter(mChatAdapter);
 
@@ -221,7 +218,7 @@ public class VideoChatActivity extends ListActivity {
     public void onBackPressed() {
         if (!this.backPressed){
             this.backPressed = true;
-            Toast.makeText(this,"Press back again to end.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, strPressBackTwice,Toast.LENGTH_SHORT).show();
             this.backPressedThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -265,10 +262,13 @@ public class VideoChatActivity extends ListActivity {
         finish();
     }
 
-
     public void sendMessage(View view) {
         String message = mChatEditText.getText().toString();
         if (message.equals("")) return; // Return if empty
+        if (message.length() > MESSAGE_LENGTH_LIMIT) {
+            Log.d("VCA-sM", "msg too long for sending");
+            message = message.substring(0, MESSAGE_LENGTH_LIMIT-1);
+        }
         ChatMessage chatMsg = new ChatMessage(this.username, message, System.currentTimeMillis());
         mChatAdapter.addMessage(chatMsg);
         JSONObject messageJSON = new JSONObject();
@@ -283,8 +283,14 @@ public class VideoChatActivity extends ListActivity {
         // Hide keyboard when you send a message.
         View focusView = this.getCurrentFocus();
         if (focusView != null) {
-            InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            try {
+                InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (inputManager != null) {
+                    inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
         mChatEditText.setText("");
     }
@@ -352,7 +358,7 @@ public class VideoChatActivity extends ListActivity {
             VideoChatActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mCallStatus.setText("Call Ended...");
+                    mCallStatus.setText(strCallEnded);
                     mCallStatus.setVisibility(View.VISIBLE);
                 }
             });

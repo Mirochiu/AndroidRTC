@@ -25,6 +25,8 @@ import me.kevingleason.androidrtc.adt.ChatMessage;
  */
 public class ChatAdapter extends ArrayAdapter<ChatMessage> {
     private static final long FADE_TIMEOUT = 3000;
+    private static final int MIN_FADEOUT_DURATION = 500;
+    private static final int FADEOUT_DURATION = 1500;
 
     private final Context context;
     private LayoutInflater inflater;
@@ -110,15 +112,20 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
     }
 
     private void setFadeOut3(final View view, final ChatMessage message){
+        int fadeoutDuration = FADEOUT_DURATION;
         Log.i("AdapterFade", "Caling Fade3");
         long elapsed = System.currentTimeMillis() - message.getTimeStamp();
         if (elapsed >= FADE_TIMEOUT){
-            if (values.contains(message))
-                values.remove(message);
-            notifyDataSetChanged();
-            return;
+            // The timestamp and system times may be larger than FADE_TIMEOUT between two different devices,
+            // so we should not remove the message directly to improve the user experience.
+            //if (values.contains(message))
+            //    values.remove(message);
+            //notifyDataSetChanged();
+            //return;
+            elapsed = FADE_TIMEOUT;
+            fadeoutDuration = MIN_FADEOUT_DURATION;
         }
-        view.animate().setStartDelay(FADE_TIMEOUT - elapsed).setDuration(1500).alpha(0)
+        view.animate().setStartDelay(FADE_TIMEOUT - elapsed).setDuration(fadeoutDuration).alpha(0)
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {

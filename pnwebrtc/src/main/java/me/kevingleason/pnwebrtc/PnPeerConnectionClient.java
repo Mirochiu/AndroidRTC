@@ -35,6 +35,9 @@ import java.util.Map;
  * {@link PnPeerConnectionClient} is used to manage peer connections.
  */
 public class PnPeerConnectionClient {
+    static String TAG = "PnPeerConnectionClient";
+    static boolean DEBUG = true;
+
     private SessionDescription localSdp  = null; // either offer or answer SDP
     private MediaStream localMediaStream = null;
     PeerConnectionFactory pcFactory;
@@ -333,6 +336,10 @@ public class PnPeerConnectionClient {
 
         @Override
         public void successCallback(String channel, Object message) {
+            if (DEBUG) {
+                if (channel == null) channel = id;
+                Log.v(TAG, "ch=" + channel + " msg=" + message);
+            }
             if (!(message instanceof JSONObject)) return; // Ignore if not valid JSON.
             JSONObject jsonMessage = (JSONObject) message;
             mRtcListener.onDebug(new PnRTCMessage(jsonMessage));

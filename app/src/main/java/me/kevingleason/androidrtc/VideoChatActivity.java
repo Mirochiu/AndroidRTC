@@ -49,6 +49,9 @@ public class VideoChatActivity extends ListActivity {
     public static final String LOCAL_MEDIA_STREAM_ID = "localStreamPN";
     public static final int MESSAGE_LENGTH_LIMIT = 256;
 
+    static String TAG = "VideoChatActivity";
+    static boolean DEBUG = true;
+
     private PnRTCClient pnRTCClient;
     private VideoSource localVideoSource;
     private VideoRenderer.Callbacks localRender;

@@ -26,6 +26,7 @@ import me.kevingleason.pnwebrtc.PnRTCMessage;
 
 public class IncomingCallActivity extends Activity {
     static String TAG = "IncomingCall";
+    static boolean DEBUG = true;
 
     private SharedPreferences mSharedPreferences;
     private String username;
@@ -75,6 +76,10 @@ public class IncomingCallActivity extends Activity {
             this.mPubNub.subscribe(this.username, new Callback() {
                 @Override
                 public void successCallback(String channel, Object message) {
+                    if (DEBUG) {
+                        if (channel == null) channel = username;
+                        Log.v(TAG, "ch=" + channel + " msg=" + message);
+                    }
                     if (!(message instanceof JSONObject)) {
                         return; // Ignore if not JSONObject
                     }

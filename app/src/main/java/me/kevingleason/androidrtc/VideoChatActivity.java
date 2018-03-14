@@ -341,6 +341,7 @@ public class VideoChatActivity extends ListActivity {
             JSONObject jsonMsg = (JSONObject) message;
             try {
                 String uuid = jsonMsg.getString(Constants.JSON_MSG_UUID);
+                if (username.equals(uuid)) return;
                 String msg  = jsonMsg.getString(Constants.JSON_MSG);
                 long   time = jsonMsg.getLong(Constants.JSON_TIME);
                 final ChatMessage chatMsg = new ChatMessage(uuid, msg, time);

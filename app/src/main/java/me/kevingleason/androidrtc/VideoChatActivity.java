@@ -261,7 +261,7 @@ public class VideoChatActivity extends ListActivity {
     }
 
     private void endCall() {
-        startActivity(new Intent(VideoChatActivity.this, MainActivity.class));
+        //startActivity(new Intent(VideoChatActivity.this, MainActivity.class));
         finish();
     }
 
@@ -366,9 +366,7 @@ public class VideoChatActivity extends ListActivity {
                 }
             });
             try {Thread.sleep(1500);} catch (InterruptedException e){e.printStackTrace();}
-            Intent intent = new Intent(VideoChatActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            endCall();
         }
     }
 }

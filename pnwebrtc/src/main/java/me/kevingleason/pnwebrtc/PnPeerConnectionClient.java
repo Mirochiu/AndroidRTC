@@ -225,6 +225,7 @@ public class PnPeerConnectionClient {
             Log.d("CAAction","CreateAnswerAction");
             PnPeer peer = peers.get(peerId);
             peer.setType(PnPeer.TYPE_OFFER);
+            Log.d("CAAction","PnPeer.STATUS_CONNECTED");
             peer.setStatus(PnPeer.STATUS_CONNECTED);
             SessionDescription sdp = new SessionDescription(
                     SessionDescription.Type.fromCanonicalForm(payload.getString("type")),
@@ -254,6 +255,11 @@ public class PnPeerConnectionClient {
             Log.d("AICAction","AddIceCandidateAction");
             PeerConnection pc = peers.get(peerId).pc;
             if (pc.getRemoteDescription() != null) {
+                if (DEBUG) {
+                    Log.v("AICAction", "  sdpMid        =" + payload.getString("sdpMid"));
+                    Log.v("AICAction", "  sdpMLineIndex =" + payload.getString("sdpMLineIndex"));
+                    Log.v("AICAction", "  candidate     =" + payload.getString("candidate"));
+                }
                 IceCandidate candidate = new IceCandidate(
                         payload.getString("sdpMid"),
                         payload.getInt("sdpMLineIndex"),

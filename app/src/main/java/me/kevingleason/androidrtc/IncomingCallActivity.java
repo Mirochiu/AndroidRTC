@@ -152,6 +152,9 @@ public class IncomingCallActivity extends Activity {
     }
 
     public void acceptCall(View view){
+        if (DEBUG) {
+            Log.v(TAG, "acceptCall");
+        }
         Intent intent = new Intent(IncomingCallActivity.this, VideoChatActivity.class);
         intent.putExtra(Constants.USER_NAME, this.username);
         intent.putExtra(Constants.CALL_USER, this.callUser);
@@ -164,12 +167,15 @@ public class IncomingCallActivity extends Activity {
      * @param view the view triggered the function
      */
     public void rejectCall(View view){
+        if (DEBUG) {
+            Log.v(TAG, "rejectCall");
+        }
         JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(this.username);
         this.mPubNub.publish(this.callUser,hangupMsg, new Callback() {
             @Override
             public void successCallback(String channel, Object message) {
-                Intent intent = new Intent(IncomingCallActivity.this, MainActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(IncomingCallActivity.this, MainActivity.class);
+                //startActivity(intent);
                 finish();
             }
         });

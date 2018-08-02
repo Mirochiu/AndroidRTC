@@ -108,13 +108,13 @@ public class PnSignalingParams {
     }
 
     public static List<PeerConnection.IceServer> defaultIceServers(){
-        List<PeerConnection.IceServer> iceServers = new ArrayList<PeerConnection.IceServer>(25);
+        List<PeerConnection.IceServer> iceServers = new ArrayList<PeerConnection.IceServer>();
         iceServers.add(new PeerConnection.IceServer("stun:stun.l.google.com:19302"));
-        iceServers.add(new PeerConnection.IceServer("stun:stun.services.mozilla.com"));
         iceServers.add(new PeerConnection.IceServer("turn:turn.bistri.com:80", "homeo", "homeo"));
         iceServers.add(new PeerConnection.IceServer("turn:turn.anyfirewall.com:443?transport=tcp", "webrtc", "webrtc"));
-
+        /*
         // Extra Defaults - 19 STUN servers + 4 initial = 23 severs (+2 padding) = Array cap 25
+        iceServers.add(new PeerConnection.IceServer("stun:stun.services.mozilla.com"));
         iceServers.add(new PeerConnection.IceServer("stun:stun1.l.google.com:19302"));
         iceServers.add(new PeerConnection.IceServer("stun:stun2.l.google.com:19302"));
         iceServers.add(new PeerConnection.IceServer("stun:stun3.l.google.com:19302"));
@@ -134,7 +134,7 @@ public class PnSignalingParams {
         iceServers.add(new PeerConnection.IceServer("stun:stun.voipstunt.com"));
         iceServers.add(new PeerConnection.IceServer("stun:stun.voxgratia.org"));
         iceServers.add(new PeerConnection.IceServer("stun:stun.xten.com"));
-
+*/
         return iceServers;
     }
 

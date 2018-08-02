@@ -20,6 +20,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'io.pristine:libjingle:9694@aar'
+    //implementation 'io.pristine:libjingle:9694@aar'
+    implementation 'io.pristine:libjingle:11139@aar'
     implementation 'com.pubnub:pubnub-android:3.7.4'
 }

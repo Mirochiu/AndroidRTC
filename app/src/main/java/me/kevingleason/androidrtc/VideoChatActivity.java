@@ -3,6 +3,10 @@ package me.kevingleason.androidrtc;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,8 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
+import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
+import org.webrtc.RendererCommon;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoCapturerAndroid;
 import org.webrtc.VideoRenderer;
@@ -100,8 +106,7 @@ public class VideoChatActivity extends ListActivity {
                 this,  // Context
                 true,  // Audio Enabled
                 true,  // Video Enabled
-                true,  // Hardware Acceleration Enabled
-                null); // Render EGL Context
+                true);  // Hardware Acceleration Enabled
 
         PeerConnectionFactory pcFactory = new PeerConnectionFactory();
         this.pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, this.username);
@@ -110,17 +115,22 @@ public class VideoChatActivity extends ListActivity {
         //    this.pnRTCClient.setSignalParams(new PnSignalingParams());
         //}
 
-        // Returns the number of cams & front/back face device name
-        int camNumber = VideoCapturerAndroid.getDeviceCount();
-        String frontFacingCam = VideoCapturerAndroid.getNameOfFrontFacingDevice();
-        String backFacingCam = VideoCapturerAndroid.getNameOfBackFacingDevice();
+        int camNumber = CameraEnumerationAndroid.getDeviceCount();
+        String frontCam = CameraEnumerationAndroid.getNameOfFrontFacingDevice();
+        String backCam = CameraEnumerationAndroid.getNameOfBackFacingDevice();
 
-        // Creates a VideoCapturerAndroid instance for the device name
-        VideoCapturer capturer;
-        if (frontFacingCam != null) {
-            capturer = VideoCapturerAndroid.create(frontFacingCam);
-        } else {
-            capturer = VideoCapturerAndroid.create(backFacingCam);
+        Log.i("CAM", "CameraEnumerationAndroid.getDeviceCount=" + camNumber);
+        Log.i("CAM", "CameraEnumerationAndroid.getNameOfFrontFacingDevice=" + frontCam);
+        Log.i("CAM", "CameraEnumerationAndroid.getNameOfBackFacingDevice=" + backCam);
+
+        VideoCapturer capturer = null;
+        if (capturer == null && frontCam != null) {
+            Log.i("CAM", "create front camera");
+            capturer = VideoCapturerAndroid.create(frontCam);
+        }
+        if (capturer == null && backCam != null) {
+            Log.i("CAM", "create back camera");
+            capturer = VideoCapturerAndroid.create(backCam);
         }
 
         // First create a Video Source, then we can make a Video Track
@@ -140,8 +150,8 @@ public class VideoChatActivity extends ListActivity {
 
         // Now that VideoRendererGui is ready, we can get our VideoRenderer.
         // IN THIS ORDER. Effects which is on top or bottom
-        remoteRender = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType.SCALE_ASPECT_FILL, false);
-        localRender = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType.SCALE_ASPECT_FILL, true);
+        remoteRender = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
+        localRender = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);
 
         // We start out with an empty MediaStream object, created with help from our PeerConnectionFactory
         //  Note that LOCAL_MEDIA_STREAM_ID can be any string
@@ -329,8 +339,8 @@ public class VideoChatActivity extends ListActivity {
                         if(remoteStream.audioTracks.size()==0 || remoteStream.videoTracks.size()==0) return;
                         mCallStatus.setVisibility(View.GONE);
                         remoteStream.videoTracks.get(0).addRenderer(new VideoRenderer(remoteRender));
-                        VideoRendererGui.update(remoteRender, 0, 0, 100, 100, VideoRendererGui.ScalingType.SCALE_ASPECT_FILL, false);
-                        VideoRendererGui.update(localRender, 72, 65, 25, 25, VideoRendererGui.ScalingType.SCALE_ASPECT_FIT, true);
+                        VideoRendererGui.update(remoteRender, 0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
+                        VideoRendererGui.update(localRender, 72, 65, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FIT, true);
                     }
                     catch (Exception e){ e.printStackTrace(); }
                 }

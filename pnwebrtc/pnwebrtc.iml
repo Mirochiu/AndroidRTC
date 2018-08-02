@@ -111,7 +111,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: io.pristine:libjingle-9694" level="project" />
+    <orderEntry type="library" name="Gradle: io.pristine:libjingle-11139" level="project" />
     <orderEntry type="library" name="Gradle: com.pubnub:pubnub-android:3.7.4@jar" level="project" />
   </component>
 </module>
